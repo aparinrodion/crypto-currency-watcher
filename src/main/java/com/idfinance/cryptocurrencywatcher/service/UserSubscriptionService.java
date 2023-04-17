@@ -1,6 +1,5 @@
 package com.idfinance.cryptocurrencywatcher.service;
 
-import com.idfinance.cryptocurrencywatcher.dto.UserSubscriptionDto;
 import com.idfinance.cryptocurrencywatcher.exceptions.SubscriptionAlreadyExistsException;
 import com.idfinance.cryptocurrencywatcher.model.CryptoCurrency;
 import com.idfinance.cryptocurrencywatcher.model.UserSubscription;

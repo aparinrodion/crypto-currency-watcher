@@ -1,17 +1,10 @@
 package com.idfinance.cryptocurrencywatcher.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.idfinance.cryptocurrencywatcher.dto.CryptoCurrencyResponse;
-import com.idfinance.cryptocurrencywatcher.exceptions.ApiResponseMappingException;
 import com.idfinance.cryptocurrencywatcher.model.CryptoCurrency;
 import com.idfinance.cryptocurrencywatcher.model.UserSubscription;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

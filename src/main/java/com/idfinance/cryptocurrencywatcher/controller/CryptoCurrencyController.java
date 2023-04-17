@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,7 +27,7 @@ public class CryptoCurrencyController {
     public List<CryptoCurrencyInfoDto> getAll() {
         return cryptoCurrencyService.getAllAvailable().stream()
                 .map(cryptoCurrencyMapper::mapToInfoDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @GetMapping("/{id}")

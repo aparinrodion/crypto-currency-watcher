@@ -1,20 +1,16 @@
 package com.idfinance.cryptocurrencywatcher.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.idfinance.cryptocurrencywatcher.config.PredefinedCurrencies;
 import com.idfinance.cryptocurrencywatcher.dto.CryptoCurrencyInfoDto;
 import com.idfinance.cryptocurrencywatcher.dto.CryptoCurrencyResponse;
-import com.idfinance.cryptocurrencywatcher.exceptions.ApiResponseMappingException;
 import com.idfinance.cryptocurrencywatcher.mapper.CryptoCurrencyMapper;
 import com.idfinance.cryptocurrencywatcher.model.CryptoCurrency;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 
@@ -23,7 +19,8 @@ import java.util.List;
 @Slf4j
 public class CryptoServiceScheduler {
 
-    private static final String API_URL_TEMPLATE = "https://api.coinlore.net/api/ticker/?id=%d";
+    private static final String BASE_URL = "https://api.coinlore.net";
+    public static final String API_URI_TEMPLATE = "/api/ticker/?id=%d";
     private static final String UPDATE_LOG_MESSAGE = "%s price updated";
 
     private final PredefinedCurrencies predefinedCurrencies;
@@ -38,39 +35,35 @@ public class CryptoServiceScheduler {
     }
 
     private void updatePrice(Long externalId) {
-        CryptoCurrencyResponse cryptoCurrencyResponse = getCurrencyFromApi(externalId);
+        WebClient client = WebClient.create(BASE_URL);
+        var typeReference = new ParameterizedTypeReference<List<CryptoCurrencyResponse>>() {
+        };
 
+        var result = client.get()
+                .uri(String.format(API_URI_TEMPLATE, externalId))
+                .retrieve()
+                .bodyToMono(typeReference);
+
+        result.subscribe(data -> {
+            if (data.size() == 0) {
+                throw new RuntimeException("Invalid api data");
+            }
+            saveCurrency(data.get(0));
+        });
+    }
+
+    private void saveCurrency(CryptoCurrencyResponse response) {
         CryptoCurrency cryptoCurrency;
 
-        if (cryptoCurrencyService.existsByExternalId(cryptoCurrencyResponse.getExternalId())) {
-            cryptoCurrency = cryptoCurrencyService.getBySymbol(cryptoCurrencyResponse.getSymbol());
-            cryptoCurrency.setPriceUsd(cryptoCurrencyResponse.getPriceUsd());
+        if (cryptoCurrencyService.existsByExternalId(response.getExternalId())) {
+            cryptoCurrency = cryptoCurrencyService.getBySymbol(response.getSymbol());
+            cryptoCurrency.setPriceUsd(response.getPriceUsd());
             notificationService.notify(cryptoCurrency);
         } else {
-            cryptoCurrency = cryptoCurrencyMapper.mapToEntity(cryptoCurrencyResponse);
+            cryptoCurrency = cryptoCurrencyMapper.mapToEntity(response);
         }
 
         cryptoCurrencyService.save(cryptoCurrency);
         log.info(String.format(UPDATE_LOG_MESSAGE, cryptoCurrency.getSymbol()));
-    }
-
-    private CryptoCurrencyResponse getCurrencyFromApi(Long externalId) {
-        RestTemplate restTemplate = new RestTemplate();
-        String jsonResponse = restTemplate.getForObject(String.format(API_URL_TEMPLATE, externalId), String.class);
-
-        ObjectMapper objectMapper = new ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        List<CryptoCurrencyResponse> currencyResponses;
-
-        //todo WebClient??
-
-        try {
-            currencyResponses = objectMapper.readValue(jsonResponse, new TypeReference<List<CryptoCurrencyResponse>>() {
-            });
-        } catch (JsonProcessingException e) {
-            throw new ApiResponseMappingException(e);
-        }
-        //TODO empty list??
-        return currencyResponses.get(0);
     }
 }

@@ -1,7 +1,5 @@
 package com.idfinance.cryptocurrencywatcher.service;
 
-import com.idfinance.cryptocurrencywatcher.config.PredefinedCurrencies;
-import com.idfinance.cryptocurrencywatcher.dto.CryptoCurrencyInfoDto;
 import com.idfinance.cryptocurrencywatcher.exceptions.CurrencyNotFoundException;
 import com.idfinance.cryptocurrencywatcher.model.CryptoCurrency;
 import com.idfinance.cryptocurrencywatcher.repository.CryptoCurrencyRepository;
