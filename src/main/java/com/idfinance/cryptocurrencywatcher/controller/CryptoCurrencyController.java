@@ -36,7 +36,7 @@ public class CryptoCurrencyController {
     }
 
     @PostMapping("/subscribe")
-    public UserSubscriptionDto notify(@RequestBody UserSubscriptionDto userSubscriptionDto) {
+    public UserSubscriptionDto subscribe(@RequestBody UserSubscriptionDto userSubscriptionDto) {
         UserSubscription userSubscription = userSubscriptionService.subscribe(userSubscriptionDto.getSymbol(),
                 userSubscriptionDto.getUsername());
         return userSubscriptionMapper.mapToDto(userSubscription);
