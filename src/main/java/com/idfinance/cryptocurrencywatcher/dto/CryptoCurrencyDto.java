@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 public class CryptoCurrencyDto {
+
     private Long id;
     private Long externalId;
     private String name;

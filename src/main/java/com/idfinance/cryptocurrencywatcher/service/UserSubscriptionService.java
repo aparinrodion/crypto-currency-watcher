@@ -6,6 +6,7 @@ import com.idfinance.cryptocurrencywatcher.model.UserSubscription;
 import com.idfinance.cryptocurrencywatcher.repository.UserSubscriptionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -16,10 +17,12 @@ public class UserSubscriptionService {
     private final UserSubscriptionRepository userSubscriptionRepository;
     private final CryptoCurrencyService cryptoCurrencyService;
 
+    @Transactional(readOnly = true)
     public List<UserSubscription> getSubscriptionsByCurrencyId(Long id) {
         return userSubscriptionRepository.findAllByCryptoCurrencyId(id);
     }
 
+    @Transactional
     public UserSubscription subscribe(String symbol, String username) {
         CryptoCurrency cryptoCurrency = cryptoCurrencyService.getBySymbol(symbol);
 

@@ -44,12 +44,7 @@ public class CryptoServiceScheduler {
                 .retrieve()
                 .bodyToMono(typeReference);
 
-        result.subscribe(data -> {
-            if (data.size() == 0) {
-                throw new RuntimeException("Invalid api data");
-            }
-            saveCurrency(data.get(0));
-        });
+        result.subscribe(data -> saveCurrency(data.get(0)));
     }
 
     private void saveCurrency(CryptoCurrencyResponse response) {

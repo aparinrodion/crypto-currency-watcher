@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 
 @Data
 public class CryptoCurrencyResponse {
+
     @JsonProperty("id")
     private Long externalId;
     private String name;

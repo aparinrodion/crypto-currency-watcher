@@ -5,11 +5,13 @@ import com.idfinance.cryptocurrencywatcher.model.CryptoCurrency;
 import com.idfinance.cryptocurrencywatcher.repository.CryptoCurrencyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CryptoCurrencyService {
 
     private final CryptoCurrencyRepository cryptoCurrencyRepository;
@@ -18,6 +20,7 @@ public class CryptoCurrencyService {
         return cryptoCurrencyRepository.findAll();
     }
 
+    @Transactional
     public CryptoCurrency save(CryptoCurrency cryptoCurrency) {
         return cryptoCurrencyRepository.save(cryptoCurrency);
     }

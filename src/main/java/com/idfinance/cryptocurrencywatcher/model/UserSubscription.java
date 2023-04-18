@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 @Data
 @Table(name = "user_subscription")
 public class UserSubscription {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
